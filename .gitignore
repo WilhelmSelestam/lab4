@@ -1,0 +1,5 @@
+/detectionSystem/build/
+/.vscode/
+/.vcpkg/
+
+/build/
