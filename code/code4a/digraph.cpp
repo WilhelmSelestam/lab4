@@ -107,6 +107,9 @@ void Digraph::pwsssp(int s) const {
     // dist vector should be initialized with std::numeric_limits<int>::max()
 
     assert(s >= 1 && s <= size);
+
+
+
     dist.assign(size + 1, std::numeric_limits<int>::max());
     path.assign(size + 1, 0);
     done.assign(size + 1, false);
@@ -116,30 +119,31 @@ void Digraph::pwsssp(int s) const {
     done[s] = true;
 
     while (true) {
-        for (const auto& edge : table[v]) {
-            int u_neighbor = edge.to;
-            int weight_vu = edge.weight;
 
-            if (!done[u_neighbor] && dist[u_neighbor] > dist[v] + weight_vu) {
-                dist[u_neighbor] = dist[v] + weight_vu;
-                path[u_neighbor] = v;
+        for (const auto& e : table[v]) {
+            int u = e.to;
+            int w = e.weight;
+
+            if (!done[u] && dist[u] > dist[v] + w) {
+                dist[u] = dist[v] + w;
+                path[u] = v;
             }
         }
 
-        int next_v_candidate = -1;
-        int min_tentative_dist = std::numeric_limits<int>::max();
+        int next_v = -1;
+        int min = std::numeric_limits<int>::max();
 
-        for (int candidate_idx = 1; candidate_idx <= size; ++candidate_idx) {
-            if (!done[candidate_idx] && dist[candidate_idx] < min_tentative_dist) {
-                min_tentative_dist = dist[candidate_idx];
-                next_v_candidate = candidate_idx;
+        for (int i = 1; i <= size; i++) {
+            if (!done[i] && dist[i] < min) {
+                min = dist[i];
+                next_v = i;
             }
         }
-        if (next_v_candidate == -1) {
+        if (next_v == -1) {
             break;
         }
 
-        v = next_v_candidate;
+        v = next_v;
 
         done[v] = true;
     }

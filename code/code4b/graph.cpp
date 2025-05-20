@@ -110,8 +110,6 @@ void Graph::mstPrim() const {
             if (!done[u] && dist[u] < min) {
                 min = dist[u];
                 next_v = u;
-
-                
             }
         }
 
