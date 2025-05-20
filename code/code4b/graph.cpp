@@ -77,26 +77,41 @@ void Graph::mstPrim() const {
 
     // *** TODO ***
 
-    dist[0] = 0;
-    path[0] = true;
-    int v = 0;
+    //std::vector<Edge> edges;
+    //for (int i = 1; i <= size; ++i) {
+    //    for (auto e : table[i]) {
+    //        edges.push_back(e);
+    //    }
+    //}
 
-    while (true) {
+    dist[1] = 0;
+    done[1] = true;
+    int v = 1;
+
+    int totalWeight = 0;
+
+    while ( true ) {
+        int u = -1;
         for (auto& e : table[v]) {
             int u = e.to;
-            if (done[u] == false && dist[u] > e.weight) {
+            int w = e.weight;
+
+            if (!done[u] && dist[u] > w) {
+                dist[u] = w;
                 path[u] = v;
-                dist[u] = e.weight;
+                
             }
         }
 
         int next_v = -1;
         int min = std::numeric_limits<int>::max();
 
-        for (int c = 1; c <= size; c++) {
-            if (!done[c] && dist[c] < min) {
-                min = dist[c];
-                next_v = c;
+        for (int u = 1; u <= size; u++) {
+            if (!done[u] && dist[u] < min) {
+                min = dist[u];
+                next_v = u;
+
+                
             }
         }
 
@@ -104,30 +119,67 @@ void Graph::mstPrim() const {
             break;
         }
 
-        v = next_v;
+        //v = next_v;
 
-        done[v] = true;
+        done[next_v] = true;
+
+        std::cout << path[next_v] << " -- " << next_v << " [weight: " << dist[next_v] << "]\n";
+        totalWeight += dist[next_v];
+        v = next_v;
     }
+
+    std::cout << "\nTotal weight = " << totalWeight << "\n";
 }
 
 // Kruskal's minimum spanning tree algorithm
 void Graph::mstKruskal() const {
-    // *** TODO ***
+    // *** TODO ***'
 
-    std::make_heap(table.begin(), table.end());
+    std::vector<Edge> edges;
+
+
+    for (int u = 1; u <= size; ++u) {
+        for (const auto& e : table[u]) {
+            if (e.from < e.to) {
+                edges.push_back(e);
+            }
+        }
+    }
+    
+    //auto cmp = [](Edge& a, Edge& b) {return a.weight > b.weight; };
+    //std::make_heap(edges.begin(), edges.end(), cmp);
+
+    std::ranges::make_heap(edges, std::greater<Edge>{});
 
     DSets D(size + 1);
 
-    std::sort_heap(table.begin(), table.end());
+    //std::sort_heap(edges.begin(), edges.end());
+
+    int t = 0;
 
     int counter = 0;
 
     while (counter < size - 1) {
-        auto v = table[0];
-        std::pop_heap(table.begin(), table.end());
+        
+        Edge e = edges.front();
+        std::ranges::pop_heap(edges, std::greater<Edge>{});
+        edges.pop_back();
+        
+        // C:/Skola/TND004 - Datastrukturer/lab4/code/code4b/graph1.txt
+
+        if (D.find(e.to) != D.find(e.from)) {
+            D.join(D.find(e.to), D.find(e.from));
+            std::cout << e.from << " -- " << e.to << " [weight: " << e.weight << "]\n";
+            counter++;
+            t += e.weight;
+        }
 
 
     }
+
+    D.print();
+
+    std::cout << "total weight: " << t << "\n";
 
 
 }
